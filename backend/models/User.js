@@ -6,7 +6,6 @@ const UserSchema = new mongoose.Schema({
   totalPoints: { type: Number, default: 0 },
   rank: { type: Number, default: 0 },
 }, { timestamps: true });
-
 UserSchema.plugin(AutoIncrement, { inc_field: "id" });
 
 module.exports = mongoose.model("User", UserSchema);

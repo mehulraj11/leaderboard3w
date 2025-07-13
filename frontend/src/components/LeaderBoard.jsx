@@ -1,28 +1,61 @@
 import { useState, useEffect } from "react";
 import { Trophy, Award } from "lucide-react";
 import RightPanel from "./RightPanel";
+import LeftPanel from "./LeftPanel";
 import axios from "axios";
 
 const LeaderBoard = () => {
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
+  const [newUserName, setNewUserName] = useState("");
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [lastClaimedPoints, setLastClaimedPoints] = useState(null);
+  // const [claimHistory, setClaimHistory] = useState([]);
+  const [isLoading, setClaiming] = useState(false);
+  // api to fetch all users
+  const fetchUsers = async () => {
+    try {
+      const user = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/getusers`
+      );
+      console.log(user.data);
 
-  // API CALL TO FETCH USERS LIST
+      setUsers(user.data);
+    } catch (error) {
+      console.log("Error fetching data", error.message);
+    }
+  };
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const user = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/getusers`
-        );
-        console.log(user.data);
-
-        setUsers(user.data);
-      } catch (error) {
-        console.log("Error fetching data", error.message);
-      }
-    };
     fetchUsers();
   }, []);
+  // api to create new user
+  const addUser = async () => {
+    if (!newUserName.trim()) {
+      alert("Please enter a valid name!");
+      return;
+    }
+
+    const newUser = {
+      name: newUserName.trim(),
+      totalPoints: 0,
+      rank: users.length + 1,
+    };
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/createuser`,
+        { newUser },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      fetchUsers();
+      setShowAddUser(false);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   // Get rank styling
   const getRankColor = (rank) => {
     switch (rank) {
@@ -62,6 +95,19 @@ const LeaderBoard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <LeftPanel
+            selectedUserId={selectedUserId}
+            setSelectedUserId={setSelectedUserId}
+            users={users}
+            claimPoints={claimPoints}
+            isLoading={isLoading}
+            lastClaimedPoints={lastClaimedPoints}
+            showAddUser={showAddUser}
+            setShowAddUser={setShowAddUser}
+            newUserName={newUserName}
+            setNewUserName={setNewUserName}
+            addUser={addUser}
+          />
           <RightPanel
             users={users}
             getRankColor={getRankColor}

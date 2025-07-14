@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import LeaderBoard from "./components/LeaderBoard";
 import axios from "axios";
 const App = () => {
+  // states
+
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [newUserName, setNewUserName] = useState("");
@@ -11,6 +13,11 @@ const App = () => {
   const [isLoading, setClaiming] = useState(false);
 
   const randomPoints = Math.floor(Math.random() * 10) + 1;
+
+  // handler functions
+
+  // api call to get claim history
+
   const getHistory = async () => {
     try {
       const res = await axios.get(
@@ -25,6 +32,9 @@ const App = () => {
       console.log(error.message);
     }
   };
+
+  // api call to get all users
+
   const fetchUsers = async () => {
     try {
       const user = await axios.get(
@@ -35,16 +45,20 @@ const App = () => {
       user.data.sort((a, b) => b.totalPoints - a.totalPoints);
 
       setUsers(user.data);
-      getHistory();
+      await getHistory();
     } catch (error) {
       console.log("Error fetching data", error.message);
     }
   };
 
+  // useeffect to render users and history on first render
+
   useEffect(() => {
     fetchUsers();
     getHistory();
   }, []);
+
+  // api call to add user / create user
 
   const addUser = async () => {
     if (!newUserName.trim()) {
@@ -53,12 +67,12 @@ const App = () => {
     }
 
     const newUser = {
-      name: newUserName.trim(),
+      name: newUserName.trim().charAt(0).toUpperCase() + newUserName.slice(1),
       totalPoints: 0,
       rank: users.length + 1,
     };
     try {
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/createuser`,
         { newUser },
         {
@@ -67,7 +81,7 @@ const App = () => {
           },
         }
       );
-      fetchUsers();
+      await fetchUsers();
       setShowAddUser(false);
       setNewUserName("");
     } catch (error) {
@@ -76,9 +90,10 @@ const App = () => {
   };
 
   // api to updateuser
-  const updateUser = async (req, res) => {
+
+  const updateUser = async () => {
     try {
-      const response = await axios.put(
+      await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/updateuser`,
         {
           selectedUserId,
@@ -116,7 +131,9 @@ const App = () => {
     }
     setClaiming(false);
   };
+
   // rank color for top 3
+
   const getRankColor = (rank) => {
     switch (rank) {
       case 1:

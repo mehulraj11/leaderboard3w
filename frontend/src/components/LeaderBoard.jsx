@@ -56,6 +56,45 @@ const LeaderBoard = () => {
       console.log(error.message);
     }
   };
+  const updateUser = async () => {
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/updateuser`,
+        {
+          selectedUserId,
+          randomPoints,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(res);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // api to claim points
+  const claimPoints = () => {
+    if (!selectedUserId) {
+      alert("Please select a user first!");
+      return;
+    }
+
+    setClaiming(true);
+    const selectedUser = users.find(
+      (user) => user.id === parseInt(selectedUserId)
+    );
+    console.log(selectedUser);
+
+    if (selectedUser) {
+      updateUser();
+      fetchUsers();
+    }
+    setClaiming(false);
+  };
   // Get rank styling
   const getRankColor = (rank) => {
     switch (rank) {

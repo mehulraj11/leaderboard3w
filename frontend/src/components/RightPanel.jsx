@@ -1,6 +1,9 @@
 import React from "react";
-import {Trophy} from "lucide-react"
-const RightPanel = ({users, getRankColor, getTrophyIcon, selectedUserId}) => {
+import { Trophy } from "lucide-react";
+const RightPanel = ({ users, getRankColor, selectedUserId }) => {
+  // console.log(users);
+  // console.log(selectedUserId);
+
   return (
     <div className="lg:col-span-2">
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
@@ -9,12 +12,12 @@ const RightPanel = ({users, getRankColor, getTrophyIcon, selectedUserId}) => {
           <h2 className="text-2xl font-bold text-gray-800">Live Leaderboard</h2>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 ">
           {users.map((user) => (
             <div
-              key={user.id}
+              key={user._id}
               className={`p-4 rounded-lg transition-all duration-300 ${
-                parseInt(selectedUserId) === user.id
+                selectedUserId == user._id
                   ? "bg-blue-50 border-2 border-blue-300 transform scale-105"
                   : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
               }`}
@@ -26,14 +29,13 @@ const RightPanel = ({users, getRankColor, getTrophyIcon, selectedUserId}) => {
                       user.rank
                     )}`}
                   >
-                    {getTrophyIcon(user.rank)}
                     {user.rank}
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg text-gray-800">
                       {user.name}
                     </h3>
-                    <p className="text-gray-600 text-sm">User ID: {user.id}</p>
+                    <p className="text-gray-600 text-sm">User ID: {user._id}</p>
                   </div>
                 </div>
                 <div className="text-right">

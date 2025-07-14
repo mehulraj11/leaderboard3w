@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const History = require("../models/History")
 // controller of get all user route : "/getusers"
 exports.getUsers = async (req, res) => {
     try {

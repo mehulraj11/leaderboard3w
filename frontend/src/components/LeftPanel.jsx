@@ -1,6 +1,7 @@
 import React from "react";
 import { Users, TrendingUp } from "lucide-react";
 import AddUser from "./AddUser";
+import ClaimHistory from "./ClaimHistory";
 const LeftPanel = ({
   selectedUserId,
   setSelectedUserId,
@@ -13,6 +14,7 @@ const LeftPanel = ({
   newUserName,
   setNewUserName,
   addUser,
+  claimHistory,
 }) => {
   return (
     <div className="lg:col-span-1 space-y-6">
@@ -30,7 +32,7 @@ const LeftPanel = ({
         >
           <option value="">Choose a user...</option>
           {users.map((user) => (
-            <option key={user.id} value={user.id}>
+            <option key={user._id} value={user._id}>
               {user.name} (Rank #{user.rank} - {user.totalPoints} pts)
             </option>
           ))}
@@ -75,6 +77,8 @@ const LeftPanel = ({
         setNewUserName={setNewUserName}
         addUser={addUser}
       />
+      {/* claim history */}
+      <ClaimHistory claimHistory={claimHistory} />
     </div>
   );
 };

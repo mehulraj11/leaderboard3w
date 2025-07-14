@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Trophy, Award } from "lucide-react";
-import RightPanel from "./RightPanel";
+import { Trophy } from "lucide-react";
 import LeftPanel from "./LeftPanel";
+import RightPanel from "./RightPanel";
 import axios from "axios";
 
 const LeaderBoard = () => {
@@ -9,26 +9,46 @@ const LeaderBoard = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [newUserName, setNewUserName] = useState("");
   const [showAddUser, setShowAddUser] = useState(false);
-  const [lastClaimedPoints, setLastClaimedPoints] = useState(null);
-  // const [claimHistory, setClaimHistory] = useState([]);
+  const [lastClaimedPoints, setLastClaimedPoints] = useState();
+  const [claimHistory, setClaimHistory] = useState([]);
   const [isLoading, setClaiming] = useState(false);
-  // api to fetch all users
+
+  const randomPoints = Math.floor(Math.random() * 10) + 1;
+  const getHistory = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/claimhistory`,
+        {},
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      setClaimHistory(res.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   const fetchUsers = async () => {
     try {
       const user = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/getusers`
       );
-      console.log(user.data);
+      // console.log(user.data);
+
+      user.data.sort((a, b) => b.totalPoints - a.totalPoints);
 
       setUsers(user.data);
+      getHistory();
     } catch (error) {
       console.log("Error fetching data", error.message);
     }
   };
+
   useEffect(() => {
     fetchUsers();
+    getHistory();
   }, []);
-  // api to create new user
+
   const addUser = async () => {
     if (!newUserName.trim()) {
       alert("Please enter a valid name!");
@@ -52,13 +72,16 @@ const LeaderBoard = () => {
       );
       fetchUsers();
       setShowAddUser(false);
+      setNewUserName("");
     } catch (error) {
       console.log(error.message);
     }
   };
-  const updateUser = async () => {
+
+  // api to updateuser
+  const updateUser = async (req, res) => {
     try {
-      const res = await axios.put(
+      const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/updateuser`,
         {
           selectedUserId,
@@ -70,32 +93,33 @@ const LeaderBoard = () => {
           },
         }
       );
-      console.log(res);
+      setLastClaimedPoints(randomPoints);
+      // console.log("res", res);
     } catch (error) {
       console.log(error.message);
     }
   };
 
   // api to claim points
-  const claimPoints = () => {
+
+  const claimPoints = async () => {
     if (!selectedUserId) {
       alert("Please select a user first!");
       return;
     }
 
     setClaiming(true);
-    const selectedUser = users.find(
-      (user) => user.id === parseInt(selectedUserId)
-    );
-    console.log(selectedUser);
+    const selectedUser = users.find((user) => user._id === selectedUserId);
+    // console.log(selectedUser);
 
     if (selectedUser) {
-      updateUser();
-      fetchUsers();
+      await updateUser();
+      await getHistory();
+      await fetchUsers();
     }
     setClaiming(false);
   };
-  // Get rank styling
+  // rank color for top 3
   const getRankColor = (rank) => {
     switch (rank) {
       case 1:
@@ -108,30 +132,21 @@ const LeaderBoard = () => {
         return "bg-gradient-to-r from-blue-500 to-blue-600 text-white";
     }
   };
-
-  // Get trophy icon for top 3
-  const getTrophyIcon = (rank) => {
-    if (rank <= 3) {
-      return <Trophy className="w-5 h-5 inline-block mr-1" />;
-    }
-    return <Award className="w-5 h-5 inline-block mr-1" />;
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {/* header */}
         <div className="text-center mb-8">
           <div className="flex justify-center items-center gap-3 mb-4">
             <Trophy className="w-10 h-10 text-yellow-500" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Leaderboard System
-            </h1>
+            <h1 className="text-4xl font-bold">Leaderboard System</h1>
           </div>
           <p className="text-gray-600 text-lg">
             Select a user and claim random points to climb the rankings!
           </p>
         </div>
+
+        {/* panels */}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <LeftPanel
@@ -146,11 +161,11 @@ const LeaderBoard = () => {
             newUserName={newUserName}
             setNewUserName={setNewUserName}
             addUser={addUser}
+            claimHistory={claimHistory}
           />
           <RightPanel
             users={users}
             getRankColor={getRankColor}
-            getTrophyIcon={getTrophyIcon}
             selectedUserId={selectedUserId}
           />
         </div>

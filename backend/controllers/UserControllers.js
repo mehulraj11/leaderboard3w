@@ -50,7 +50,7 @@ exports.updateUser = async (req, res) => {
         const allUsers = await User.find().sort({ totalPoints: -1 });
 
         const bulkOps = allUsers.map((user, index) => ({
-            updatedOne: {
+            updateOne: {
                 filter: { _id: user._id },
                 update: { $set: { rank: index + 1 } },
             },

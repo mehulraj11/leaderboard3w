@@ -6,7 +6,7 @@ const ClaimHistory = ({ claimHistory }) => {
   return (
     <>
       {claimHistory.length > 0 && (
-        <div className="mt-8 bg-white rounded-xl shadow-lg p-6 border border-red-200">
+        <div className="mt-8 bg-white rounded-xl shadow-lg p-6 border border-gray-200">
           <div className="flex items-center gap-2 mb-6">
             <Clock className="w-6 h-6 text-indigo-500" />
             <h2 className="text-2xl font-bold text-gray-800">Recent Claims</h2>

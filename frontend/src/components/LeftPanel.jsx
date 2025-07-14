@@ -1,4 +1,3 @@
-import React from "react";
 import { Users, TrendingUp } from "lucide-react";
 import AddUser from "./AddUser";
 import ClaimHistory from "./ClaimHistory";
@@ -7,7 +6,6 @@ const LeftPanel = ({
   setSelectedUserId,
   users,
   claimPoints,
-  isLoading,
   lastClaimedPoints,
   showAddUser,
   setShowAddUser,
@@ -33,37 +31,30 @@ const LeftPanel = ({
           <option value="">Choose a user...</option>
           {users.map((user) => (
             <option key={user._id} value={user._id}>
-              {user.name} (Rank #{user.rank} - {user.totalPoints} pts)
+              {user.name} (Rank #{user.rank} - {user.totalPoints} points)
             </option>
           ))}
         </select>
 
         <button
           onClick={claimPoints}
-          disabled={!selectedUserId || isLoading}
+          disabled={!selectedUserId}
           className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
-            !selectedUserId || isLoading
+            !selectedUserId
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 transform hover:scale-105"
           }`}
         >
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Claiming...
-            </div>
-          ) : (
-            <div className="flex items-center justify-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Claim Points
-            </div>
-          )}
+          <div className="flex items-center justify-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            Claim Points
+          </div>
         </button>
 
         {lastClaimedPoints && (
           <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-green-800 font-semibold text-center">
-              🎉 +{lastClaimedPoints} points claimed!
+              +{lastClaimedPoints} points claimed!
             </p>
           </div>
         )}

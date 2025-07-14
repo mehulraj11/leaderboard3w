@@ -53,10 +53,10 @@ exports.updateUser = async (req, res) => {
             updatedOne: {
                 filter: { _id: user._id },
                 update: { $set: { rank: index + 1 } },
-            }
+            },
         }));
         await User.bulkWrite(bulkOps);
-        res.status(200).json({ message: "Points updated successfully.", user: updatedUser });
+        res.status(200).json({ message: "Points and ranks updated successfully.", user: updatedUser });
     } catch (error) {
         console.error("Update User Points Error:", error.message);
         res.status(500).json({ message: "Server error while updating points." });
